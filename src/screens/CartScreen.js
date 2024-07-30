@@ -1,12 +1,17 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Button } from 'react-native';
 
-const CartScreen = () => {
+const Cart = ({ route, navigation }) => {
+  const { product } = route.params;
+
   return (
     <View>
-      <Text>Cart Screen</Text>
+      <Text>Cart Items</Text>
+      <Text>{product.name}</Text>
+      <Text>{product.price}</Text>
+      <Button title="Proceed to Checkout" onPress={() => navigation.navigate('Checkout')} />
     </View>
   );
 };
 
-export default CartScreen;
+export default Cart;
