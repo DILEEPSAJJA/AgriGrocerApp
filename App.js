@@ -1,55 +1,67 @@
+import 'react-native-gesture-handler';
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Login from './screens/LoginScreen';
-import HomeScreen from './screens/Home';
-import Register from './screens/Register';
-import FarmerHome from './screens/FarmerHome';
-import OrganizationHome from './screens/OrganizationHome';
-import SplashScreenComponent from './screens/SplashScreenComponent'; // Import SplashScreenComponent
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import RegisterScreen from './screens/RegisterScreen';
+import SplashScreenComponent from './screens/SplashScreenComponent';
+import FarmerDashboard from './screens/FarmerDashboard';
+import OrganisationDashboard from './screens/OrganizationDashboard';
+import CustomerDashboard from './screens/CustomerDashboard';
+import { auth, firestore } from './utils/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 import Toast from 'react-native-toast-message';
 
 const Stack = createStackNavigator();
 
 const App = () => {
-  const [initialRoute, setInitialRoute] = useState('Splash'); // State for initial route
+  const [initialRoute, setInitialRoute] = useState('Splash');
 
   useEffect(() => {
-    const checkUserRole = async () => {
-      // Check if user is logged in and fetch role
-      const role = await AsyncStorage.getItem('role');
-      if (role) {
-        setInitialRoute(role.charAt(0).toUpperCase() + role.slice(1) + 'Home'); // Set home screen based on role
-      } else {
-        setInitialRoute('Login'); // Default to Login if no role found
-      }
+    const checkUser = async () => {
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          const userDoc = await firestore.doc(`Users/${user.uid}`).get();
+          if (userDoc.exists) {
+            const userData = userDoc.data();
+            await AsyncStorage.setItem('userRole', userData.role);
+
+            switch (userData.role) {
+              case 'customer':
+                setInitialRoute('CustomerDashboard');
+                break;
+              case 'farmer':
+                setInitialRoute('FarmerDashboard');
+                break;
+              case 'organization':
+                setInitialRoute('OrganisationDashboard');
+                break;
+              default:
+                setInitialRoute('Login');
+            }
+          } else {
+            setInitialRoute('Login');
+          }
+        } else {
+          setInitialRoute('Login');
+        }
+      });
     };
-
-    checkUserRole();
+    checkUser();
   }, []);
-
-  const showToast = () => {
-    Toast.show({
-      type: 'success',
-      position: 'top',
-      text1: 'Success',
-      text2: 'You have successfully logged in!',
-    });
-  };
 
   return (
     <NavigationContainer>
       <Stack.Navigator
         initialRouteName={initialRoute}
-        screenOptions={{ headerShown: false }} // Hide headers for simplicity
+        screenOptions={{ headerShown: false }}
       >
         <Stack.Screen name="Splash" component={SplashScreenComponent} />
         <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="Register" component={Register} />
-        <Stack.Screen name="HomeScreen" component={HomeScreen} />
-        <Stack.Screen name="FarmerHome" component={FarmerHome} />
-        <Stack.Screen name="OrganizationHome" component={OrganizationHome} />
+        <Stack.Screen name="Register" component={RegisterScreen} />
+        <Stack.Screen name="FarmerDashboard" component={FarmerDashboard} />
+        <Stack.Screen name="OrganizationDashboard" component={OrganisationDashboard} />
+        <Stack.Screen name="CustomerDashboard" component={CustomerDashboard} />
       </Stack.Navigator>
       <Toast ref={(ref) => Toast.setRef(ref)} />
     </NavigationContainer>

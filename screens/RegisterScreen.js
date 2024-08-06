@@ -1,65 +1,62 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, Modal } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { auth, firestore, createUserWithEmailAndPassword, doc, setDoc } from '../utils/firebase'; 
-import { Picker } from '@react-native-picker/picker'; // Import Picker from @react-native-picker/picker
+import { auth, firestore } from '../utils/firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { setDoc, doc } from 'firebase/firestore';
+import { Picker } from '@react-native-picker/picker';
 import Toast from 'react-native-toast-message';
 
-const Register = () => {
+const RegisterScreen = () => {
   const navigation = useNavigation();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [role, setRole] = useState('customer'); 
-  
-  const showToast = () => {
-    Toast.show({
-      type: 'success',
-      position: 'top',
-      text1: 'Registration Successful',
-      text2: 'You have successfully registered!',
-    });
-  };
+  const [role, setRole] = useState('customer');
+  const [loading, setLoading] = useState(false);
 
   const handleRegister = async () => {
+    setLoading(true);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-  
-      // Determine the collection based on the selected role
-      let collectionName;
-      switch (role) {
-        case 'farmer':
-          collectionName = 'farmers';
-          break;
-        case 'organization':
-          collectionName = 'organizations';
-          break;
-        case 'customer':
-        default:
-          collectionName = 'customers';
-          break;
-      }
-  
-      // Save user data to the selected collection
-      await setDoc(doc(firestore, collectionName, user.uid), {
+
+      // Save user data to the "Users" collection with the selected role
+      await setDoc(doc(firestore, 'Users', user.uid), {
         name,
         email,
         phoneNumber,
         role,
       });
-  
-      showToast(); // Show success toast
+
+      setLoading(false);
+      Toast.show({
+        type: 'success',
+        position: 'top',
+        text1: 'Registration Successful',
+        text2: 'You have successfully registered!',
+      });
       navigation.navigate('Login'); // Navigate to the login screen after registration
     } catch (error) {
-      Alert.alert('Registration Failed', error.message);
+      setLoading(false);
+      console.error("Registration failed: ", error);
+      Toast.show({
+        type: 'error',
+        position: 'top',
+        text1: 'Registration Failed',
+        text2: error.message,
+      });
     }
   };
-  
 
   return (
     <View style={styles.container}>
+      <Modal visible={loading} transparent={true} animationType="fade">
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#0000ff" />
+        </View>
+      </Modal>
       <Text style={styles.title}>Register</Text>
       <TextInput
         style={styles.input}
@@ -159,6 +156,12 @@ const styles = StyleSheet.create({
     marginTop: 15,
     textAlign: 'center',
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
 });
 
-export default Register;
+export default RegisterScreen;

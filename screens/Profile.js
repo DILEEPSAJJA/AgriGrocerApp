@@ -1,110 +1,70 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Image, Button, TextInput, TouchableOpacity } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useTranslation } from "react-i18next";
+import React, { useEffect, useState } from 'react';
+import { SafeAreaView, StyleSheet, View, Text, Button, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { signOut } from 'firebase/auth';
+import { auth } from '../utils/firebase'; // Adjust the import path as needed
 
 const Profile = () => {
-  const { t } = useTranslation();
-  const [name, setName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [isEditing, setIsEditing] = useState(false);
+  const [userName, setUserName] = useState('');
+  const [userEmail, setUserEmail] = useState('');
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const storedName = await AsyncStorage.getItem("name");
-      const storedPhoneNumber = await AsyncStorage.getItem("phoneNumber");
-      setName(storedName || "");
-      setPhoneNumber(storedPhoneNumber || "");
+      try {
+        const name = await AsyncStorage.getItem('name');
+        const email = await AsyncStorage.getItem('email');
+        setUserName(name || 'Unknown');
+        setUserEmail(email || 'Unknown');
+      } catch (error) {
+        Alert.alert('Error', 'Unable to fetch user data.');
+      }
     };
 
     fetchUserData();
   }, []);
 
-  const handleSave = async () => {
-    await AsyncStorage.setItem("name", name);
-    await AsyncStorage.setItem("phoneNumber", phoneNumber);
-    setIsEditing(false);
-  };
-
-  const handleEdit = () => {
-    setIsEditing(true);
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      // Navigate to the login screen
+    } catch (error) {
+      Alert.alert('Error', 'There was an issue logging out. Please try again.');
+    }
   };
 
   return (
-    <View style={styles.container}>
-      <Image source={require("../assets/avatar.png")} style={styles.avatar} />
-      {isEditing ? (
-        <>
-          <TextInput
-            style={styles.input}
-            value={name}
-            onChangeText={setName}
-            placeholder={t("Enter your name")}
-          />
-          <TextInput
-            style={styles.input}
-            value={phoneNumber}
-            onChangeText={setPhoneNumber}
-            placeholder={t("Enter your phone number")}
-            keyboardType="phone-pad"
-          />
-          <TouchableOpacity style={styles.button} onPress={handleSave}>
-            <Text style={styles.buttonText}>{t("Save")}</Text>
-          </TouchableOpacity>
-        </>
-      ) : (
-        <>
-          <Text style={styles.name}>{name || t("Guest")}</Text>
-          <Text style={styles.phoneNumber}>{phoneNumber || t("Unknown")}</Text>
-          <TouchableOpacity style={styles.button} onPress={handleEdit}>
-            <Text style={styles.buttonText}>{t("Edit Profile")}</Text>
-          </TouchableOpacity>
-        </>
-      )}
-    </View>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.profileContainer}>
+        <Text style={styles.label}>Name:</Text>
+        <Text style={styles.value}>{userName}</Text>
+        <Text style={styles.label}>Email:</Text>
+        <Text style={styles.value}>{userEmail}</Text>
+        <Button title="Logout" onPress={handleLogout} />
+      </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  profileContainer: {
+    width: '80%',
     padding: 20,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    elevation: 3,
   },
-  avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginBottom: 20,
+  label: {
+    fontWeight: 'bold',
+    marginBottom: 5,
   },
-  name: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  phoneNumber: {
+  value: {
     fontSize: 16,
-    color: "gray",
     marginBottom: 20,
-  },
-  input: {
-    width: "100%",
-    height: 40,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    marginBottom: 10,
-  },
-  button: {
-    backgroundColor: "#4CAF50",
-    padding: 10,
-    borderRadius: 5,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
   },
 });
 
