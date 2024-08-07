@@ -1,7 +1,10 @@
 import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import Toast from 'react-native-toast-message';
 import CustomerHome from './CustomerHome'; // Example screen
+import Myorders from './Myorders';
+import Offers from './Offers';
 import Profile from './Profile';
 import Logout from './Logout'; // Assume you have this screen
 
@@ -27,6 +30,20 @@ const CustomerDashboard = () => {
       <Drawer.Screen
         name="CustomerHome"
         component={CustomerHome}
+        options={{
+          drawerIcon: ({ color }) => <Icon name="home-outline" size={22} color={color} />,
+        }}
+      />
+       <Drawer.Screen
+        name="Offers"
+        component={Offers}
+        options={{
+          drawerIcon: ({ color }) => <Icon name="home-outline" size={22} color={color} />,
+        }}
+      />
+      <Drawer.Screen
+        name="My Orders"
+        component={Myorders}
         options={{
           drawerIcon: ({ color }) => <Icon name="home-outline" size={22} color={color} />,
         }}

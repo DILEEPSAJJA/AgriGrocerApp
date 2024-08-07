@@ -1,7 +1,9 @@
 import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import Toast from 'react-native-toast-message';
 import FarmerHome from './FarmerHome'; // Example screen
+import WareHouse from './WareHouse';
 import Profile from './Profile';
 import Logout from './Logout'; // Assume you have this screen
 
@@ -29,6 +31,13 @@ const FarmerDashboard = () => {
         component={FarmerHome}
         options={{
           drawerIcon: ({ color }) => <Icon name="home-outline" size={22} color={color} />,
+        }}
+      />
+      <Drawer.Screen
+        name="WareHouse"
+        component={WareHouse}
+        options={{
+          drawerIcon: ({ color }) => <Icon name="account-outline" size={22} color={color} />,
         }}
       />
       <Drawer.Screen

@@ -1,7 +1,6 @@
-// screens/SplashScreenComponent.js
 import React from 'react';
 import AppIntroSlider from 'react-native-app-intro-slider';
-import { View, Text, Image, StyleSheet, Button } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 
 const slides = [
   {
@@ -20,7 +19,7 @@ const slides = [
     key: '3',
     title: 'Find Subsidy Schemes and Support',
     text: 'Get information about various subsidy schemes and support.',
-    image: require('../assets/splash1.png'),
+    image: require('../assets/splash3.png'),
     isLast: true, // Add a flag to identify the last slide
   },
 ];
@@ -33,10 +32,9 @@ export default function SplashScreenComponent({ navigation }) {
         <Image source={item.image} style={styles.image} />
         <Text style={styles.text}>{item.text}</Text>
         {item.isLast && (
-          <Button style={styles.btn}
-            title="Get Started"
-            onPress={() => navigation.navigate('Login')}
-          />
+          <TouchableOpacity style={styles.btn} onPress={() => navigation.navigate('Login')}>
+            <Text style={styles.btnText}>Register</Text>
+          </TouchableOpacity>
         )}
       </View>
     );
@@ -46,6 +44,22 @@ export default function SplashScreenComponent({ navigation }) {
     navigation.navigate('Login');
   };
 
+  const renderSkipButton = () => {
+    return (
+      <View style={styles.buttonContainer}>
+        <Text style={styles.buttonText}>Skip</Text>
+      </View>
+    );
+  };
+
+  const renderDoneButton = () => {
+    return (
+      <View style={styles.buttonContainer}>
+        <Text style={styles.buttonText}>Done</Text>
+      </View>
+    );
+  };
+
   return (
     <AppIntroSlider
       renderItem={_renderItem}
@@ -53,6 +67,8 @@ export default function SplashScreenComponent({ navigation }) {
       onDone={_onDone}
       showSkipButton
       onSkip={_onDone}
+      renderSkipButton={renderSkipButton}
+      renderDoneButton={renderDoneButton}
     />
   );
 }
@@ -81,24 +97,26 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   btn: {
-  position: 'absolute',
-  bottom: 20,
-  right: 20,
-  width: 56,
-  height: 56,
-  borderRadius: 28,
-  backgroundColor: '#000', // Black background color
-  alignItems: 'center',
-  justifyContent: 'center',
-  elevation: 5, 
-  shadowColor: '#000', 
-  shadowOffset: { width: 0, height: 2 }, // iOS shadow offset
-  shadowOpacity: 0.2, // iOS shadow opacity
-  shadowRadius: 4, // iOS shadow radius
-},
-btnText: {
-  color: '#fff', // White text color
-  fontSize: 16, // Font size for the text
-  fontWeight: 'bold', // Font weight for emphasis
-},
+    top: 40,
+    backgroundColor: '#000',
+    padding: 15,
+    paddingHorizontal: 105,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  btnText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  buttonContainer: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  buttonText: {
+    color: '#000', // Change this to your desired text color
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 });

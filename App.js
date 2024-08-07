@@ -8,6 +8,7 @@ import SplashScreenComponent from './screens/SplashScreenComponent';
 import FarmerDashboard from './screens/FarmerDashboard';
 import OrganisationDashboard from './screens/OrganizationDashboard';
 import CustomerDashboard from './screens/CustomerDashboard';
+import Logout from './screens/Logout';
 import { auth, firestore } from './utils/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import Toast from 'react-native-toast-message';
@@ -62,6 +63,7 @@ const App = () => {
         <Stack.Screen name="FarmerDashboard" component={FarmerDashboard} />
         <Stack.Screen name="OrganizationDashboard" component={OrganisationDashboard} />
         <Stack.Screen name="CustomerDashboard" component={CustomerDashboard} />
+        <Stack.Screen name="Logout" component={Logout} />
       </Stack.Navigator>
       <Toast ref={(ref) => Toast.setRef(ref)} />
     </NavigationContainer>
