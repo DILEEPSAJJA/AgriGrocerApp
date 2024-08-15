@@ -32,7 +32,7 @@ export default function SplashScreenComponent({ navigation }) {
         <Image source={item.image} style={styles.image} />
         <Text style={styles.text}>{item.text}</Text>
         {item.isLast && (
-          <TouchableOpacity style={styles.btn} onPress={() => navigation.navigate('Login')}>
+          <TouchableOpacity style={styles.btn} onPress={() => navigation.navigate('Register')}>
             <Text style={styles.btnText}>Register</Text>
           </TouchableOpacity>
         )}

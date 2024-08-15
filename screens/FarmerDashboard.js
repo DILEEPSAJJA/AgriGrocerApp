@@ -1,17 +1,18 @@
 import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import Toast from 'react-native-toast-message';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import FarmerHome from './FarmerHome'; // Example screen
 import WareHouse from './WareHouse';
 import Profile from './Profile';
 import Logout from './Logout'; // Assume you have this screen
+import CustomDrawerContent from './CustomDrawerContent'; // Adjust the import path as needed
 
 const Drawer = createDrawerNavigator();
 
 const FarmerDashboard = () => {
   return (
     <Drawer.Navigator
+      drawerContent={(props) => <CustomDrawerContent {...props} />}
       screenOptions={{
         drawerStyle: {
           backgroundColor: '#e6e6e6',
@@ -37,7 +38,7 @@ const FarmerDashboard = () => {
         name="WareHouse"
         component={WareHouse}
         options={{
-          drawerIcon: ({ color }) => <Icon name="account-outline" size={22} color={color} />,
+          drawerIcon: ({ color }) => <Icon name="warehouse" size={22} color={color} />,
         }}
       />
       <Drawer.Screen

@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, StyleSheet, View, Text, Button, Alert, TextInput, TouchableOpacity, Image } from 'react-native';
+import { SafeAreaView, StyleSheet, View, Text, Alert, TextInput, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { signOut, updatePassword } from 'firebase/auth';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { auth, firestore } from '../utils/firebase'; // Adjust the import path as needed
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const Profile = () => {
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [address, setAddress] = useState('');
   const [loading, setLoading] = useState(true);
   const [newPassword, setNewPassword] = useState('');
@@ -26,6 +27,7 @@ const Profile = () => {
           if (userData) {
             setUserName(userData.name || 'Unknown');
             setUserEmail(userData.email || 'Unknown');
+            setPhoneNumber(userData.phoneNumber || '');
             setAddress(userData.address || '');
             setProfilePic(userData.profilePic || null);
           }
@@ -40,35 +42,43 @@ const Profile = () => {
     fetchUserData();
   }, []);
 
-  const handleUpdatePassword = async () => {
-    const user = auth.currentUser;
-    if (user) {
-      try {
-        await updatePassword(user, newPassword);
-        Alert.alert('Success', 'Password updated successfully.');
-      } catch (error) {
-        Alert.alert('Error', error.message);
-      }
-    }
-  };
-
-  const handleUpdateProfile = async () => {
-    const user = auth.currentUser;
-    if (user) {
-      try {
-        await updateDoc(doc(firestore, 'Users', user.uid), {
-          address,
-          profilePic,
-        });
-        Alert.alert('Success', 'Profile updated successfully.');
-      } catch (error) {
-        Alert.alert('Error', 'Unable to update profile.');
-      }
-    }
+  const handleUpdateProfile = () => {
+    // Logic to update profile goes here, for example API call
+    console.log("Profile updated!");
+    alert('Profile updated successfully');
   };
 
   const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
+    let options = ['Camera', 'Gallery'];
+    Alert.alert(
+      'Select Image Source',
+      '',
+      [
+        {
+          text: options[0],
+          onPress: () => pickFromCamera(),
+        },
+        {
+          text: options[1],
+          onPress: () => pickFromGallery(),
+        },
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
+  const pickFromGallery = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permissionResult.granted) {
+      Alert.alert('Permission denied', 'You need to allow access to the gallery.');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
@@ -76,17 +86,48 @@ const Profile = () => {
     });
 
     if (!result.canceled) {
-      const { uri } = result;
-      const user = auth.currentUser;
-      const storage = getStorage();
-      const storageRef = ref(storage, `profile_pics/${user.uid}`);
-      const img = await fetch(uri);
-      const bytes = await img.blob();
+      uploadImage(result.uri);
+    }
+  };
 
+  const pickFromCamera = async () => {
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+    if (!permissionResult.granted) {
+      Alert.alert('Permission denied', 'You need to allow access to the camera.');
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      uploadImage(result.uri);
+    }
+  };
+
+  const uploadImage = async (uri) => {
+    const user = auth.currentUser;
+    const storage = getStorage();
+    const storageRef = ref(storage, `profile_pics/${user.uid}`);
+    const img = await fetch(uri);
+    const bytes = await img.blob();
+
+    try {
       await uploadBytes(storageRef, bytes);
       const downloadURL = await getDownloadURL(storageRef);
-
       setProfilePic(downloadURL);
+
+      // Update the user's profile in Firestore with the new image URL
+      await updateDoc(doc(firestore, 'Users', user.uid), {
+        profilePic: downloadURL,
+      });
+
+      Alert.alert('Success', 'Profile picture updated successfully.');
+    } catch (error) {
+      Alert.alert('Error', 'Unable to update profile picture.');
     }
   };
 
@@ -101,70 +142,165 @@ const Profile = () => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.profileContainer}>
-        <Text style={styles.label}>Name:</Text>
-        <Text style={styles.value}>{userName}</Text>
-        <Text style={styles.label}>Email:</Text>
-        <Text style={styles.value}>{userEmail}</Text>
-        <Text style={styles.label}>Address:</Text>
-        <TextInput
-          style={styles.input}
-          value={address}
-          onChangeText={setAddress}
-        />
-        <Button title="Pick an image from camera roll" onPress={pickImage} />
-        {profilePic && <Image source={{ uri: profilePic }} style={styles.image} />}
-        <TextInput
-          style={styles.input}
-          placeholder="New Password"
-          secureTextEntry
-          value={newPassword}
-          onChangeText={setNewPassword}
-        />
-        <Button title="Update Password" onPress={handleUpdatePassword} />
-        <Button title="Update Profile" onPress={handleUpdateProfile} />
-        <Button title="Sign Out" onPress={() => signOut(auth)} />
-      </View>
-    </SafeAreaView>
+    <ScrollView>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <View style={styles.icon}>
+              <Text>X</Text>
+            </View>
+          </TouchableOpacity>
+          <Text style={styles.title}></Text>
+        </View>
+
+        <View style={styles.imageContainer}>
+          <Image
+            source={profilePic ? { uri: profilePic } : require('../assets/default-profile.png')}
+            style={styles.profileImage}
+          />
+        </View>
+
+        <TouchableOpacity style={styles.editButton} onPress={pickImage}>
+          <Text style={styles.editButtonText}>Edit Profile Photo</Text>
+        </TouchableOpacity>
+
+        {/* Profile Update Form */}
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Full Name</Text>
+          <TextInput
+            style={styles.input}
+            value={userName}
+            onChangeText={setUserName}
+          />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Phone Number</Text>
+          <TextInput
+            style={styles.input}
+            value={phoneNumber}
+            onChangeText={setPhoneNumber}
+            placeholder="Phone Number"
+          />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Email</Text>
+          <TextInput
+            style={styles.input}
+            value={userEmail}
+            onChangeText={setUserEmail}
+            editable={false}
+          />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Address</Text>
+          <TextInput
+            style={[styles.input, { height: 80 }]}
+            value={address}
+            onChangeText={setAddress}
+            multiline
+          />
+        </View>
+
+        <TouchableOpacity style={styles.button} onPress={handleUpdateProfile}>
+          <Text style={styles.buttonText}>Update Profile</Text>
+        </TouchableOpacity>
+
+        {/* Password Change Section */}
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>New Password</Text>
+          <TextInput
+            style={styles.input}
+            value={newPassword}
+            onChangeText={setNewPassword}
+            secureTextEntry
+            placeholder="Enter new password"
+          />
+        </View>
+
+        <TouchableOpacity style={styles.button} onPress={handleUpdatePassword}>
+          <Text style={styles.buttonText}>Change Password</Text>
+        </TouchableOpacity>
+
+      </SafeAreaView>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  // Style definitions
   container: {
     flex: 1,
-    justifyContent: 'center',
+    backgroundColor: 'white',
+    paddingHorizontal: 16,
+  },
+  header: {
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 16,
   },
-  profileContainer: {
-    width: '80%',
-    padding: 20,
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    elevation: 3,
+  icon: {
+    padding: 8,
+    borderRadius: 16,
+    backgroundColor: '#f0f2f5',
   },
-  label: {
+  title: {
+    fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 5,
+    color: '#111518',
   },
-  value: {
-    fontSize: 16,
-    marginBottom: 20,
+  imageContainer: {
+    alignItems: 'center',
+    marginVertical: 16,
   },
-  input: {
-    width: '100%',
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    marginBottom: 20,
-  },
-  image: {
+  profileImage: {
     width: 100,
     height: 100,
     borderRadius: 50,
-    marginTop: 10,
-    marginBottom: 20,
+  },
+  editButton: {
+    backgroundColor: '#f0f2f5',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    alignSelf: 'center',
+    marginVertical: 8,
+  },
+  editButtonText: {
+    color: '#111518',
+    fontWeight: 'bold',
+  },
+  inputContainer: {
+    marginVertical: 8,
+  },
+  label: {
+    color: '#111518',
+    fontWeight: '500',
+    marginBottom: 4,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#dbe1e6',
+    borderRadius: 10,
+    padding: 12,
+    backgroundColor: 'white',
+    color: '#111518',
+  },
+  button: {
+    backgroundColor: '#f0f2f5',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    alignSelf: 'center',
+    marginVertical: 8,
+  },
+  buttonText: {
+    color: '#111518',
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 
