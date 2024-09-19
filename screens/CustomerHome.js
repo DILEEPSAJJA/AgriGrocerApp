@@ -223,7 +223,7 @@ export default class Home extends React.Component {
                   }
                 >
                   <Category
-                    imgSrc={require("../assets/images/mens_fashion.jpg")}
+                    imgSrc={require("../assets/images/fruits.jpg")}
                     name="FRUITS"
                     textBgColor="black"
                   />
@@ -235,7 +235,7 @@ export default class Home extends React.Component {
                   }
                 >
                   <Category
-                    imgSrc={require("../assets/images/womens_fashion.jpg")}
+                    imgSrc={require("../assets/images/vegetables.jpg")}
                     name="VEGETABLES"
                     textBgColor="black"
                   />
@@ -247,7 +247,7 @@ export default class Home extends React.Component {
                   }
                 >
                   <Category
-                    imgSrc={require("../assets/images/kids_fashion.jpg")}
+                    imgSrc={require("../assets/images/diary.jpg")}
                     name="DIARY PRODUCTS"
                     textBgColor="black"
                   />
@@ -264,7 +264,7 @@ export default class Home extends React.Component {
                     textBgColor="purple"
                   />
                 </TouchableOpacity> */}
-                
+
               </ScrollView>
             </View>
             <View style={{ flex: 1, paddingTop: sizes.padding }}>
