@@ -42,10 +42,30 @@ const Profile = () => {
     fetchUserData();
   }, []);
 
-  const handleUpdateProfile = () => {
-    // Logic to update profile goes here, for example API call
-    console.log("Profile updated!");
-    alert('Profile updated successfully');
+  const handleUpdateProfile = async () => {
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        await updateDoc(doc(firestore, 'Users', user.uid), {
+          name: userName,
+          phoneNumber: phoneNumber,
+          address: address,
+        });
+        Alert.alert('Success', 'Profile updated successfully.');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Unable to update profile.');
+    }
+  };
+
+  const handleUpdatePassword = async () => {
+    try {
+      await updatePassword(auth.currentUser, newPassword);
+      Alert.alert('Success', 'Password updated successfully.');
+      setNewPassword('');
+    } catch (error) {
+      Alert.alert('Error', 'Unable to update password.');
+    }
   };
 
   const pickImage = async () => {
@@ -71,65 +91,138 @@ const Profile = () => {
     );
   };
 
+  // const pickFromGallery = async () => {
+  //   const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  //   if (!permissionResult.granted) {
+  //     Alert.alert('Permission denied', 'You need to allow access to the gallery.');
+  //     return;
+  //   }
+
+  //   const result = await ImagePicker.launchImageLibraryAsync({
+  //     mediaTypes: ImagePicker.MediaTypeOptions.Images,
+  //     allowsEditing: true,
+  //     aspect: [4, 3],
+  //     quality: 1,
+  //   });
+
+  //   if (!result.canceled) {
+  //     uploadImage(result.uri);
+  //   }
+  // };
+
+  // const pickFromCamera = async () => {
+  //   const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+  //   if (!permissionResult.granted) {
+  //     Alert.alert('Permission denied', 'You need to allow access to the camera.');
+  //     return;
+  //   }
+
+  //   const result = await ImagePicker.launchCameraAsync({
+  //     allowsEditing: true,
+  //     aspect: [4, 3],
+  //     quality: 1,
+  //   });
+
+  //   if (!result.canceled) {
+  //     uploadImage(result.uri);
+  //   }
+  // };
+
   const pickFromGallery = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permissionResult.granted) {
       Alert.alert('Permission denied', 'You need to allow access to the gallery.');
       return;
     }
-
+  
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
     });
-
+  
     if (!result.canceled) {
       uploadImage(result.uri);
     }
   };
-
+  
   const pickFromCamera = async () => {
     const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
     if (!permissionResult.granted) {
       Alert.alert('Permission denied', 'You need to allow access to the camera.');
       return;
     }
-
+  
     const result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
     });
-
+  
     if (!result.canceled) {
       uploadImage(result.uri);
     }
   };
-
+  
   const uploadImage = async (uri) => {
     const user = auth.currentUser;
+    if (!user) {
+      Alert.alert('Error', 'User not authenticated.');
+      return;
+    }
+  
     const storage = getStorage();
     const storageRef = ref(storage, `profile_pics/${user.uid}`);
-    const img = await fetch(uri);
-    const bytes = await img.blob();
-
+    
     try {
-      await uploadBytes(storageRef, bytes);
+      // Convert image to blob
+      const response = await fetch(uri);
+      const blob = await response.blob();
+      
+      // Upload image to Firebase Storage
+      await uploadBytes(storageRef, blob);
       const downloadURL = await getDownloadURL(storageRef);
-      setProfilePic(downloadURL);
-
+      
       // Update the user's profile in Firestore with the new image URL
       await updateDoc(doc(firestore, 'Users', user.uid), {
         profilePic: downloadURL,
       });
-
+      
+      // Update local state
+      setProfilePic(downloadURL);
+      
       Alert.alert('Success', 'Profile picture updated successfully.');
     } catch (error) {
       Alert.alert('Error', 'Unable to update profile picture.');
+      console.error(error);
     }
   };
+  
+  
+
+  // const uploadImage = async (uri) => {
+  //   const user = auth.currentUser;
+  //   const storage = getStorage();
+  //   const storageRef = ref(storage, `profile_pics/${user.uid}`);
+  //   const img = await fetch(uri);
+  //   const bytes = await img.blob();
+
+  //   try {
+  //     await uploadBytes(storageRef, bytes);
+  //     const downloadURL = await getDownloadURL(storageRef);
+  //     setProfilePic(downloadURL);
+
+  //     // Update the user's profile in Firestore with the new image URL
+  //     await updateDoc(doc(firestore, 'Users', user.uid), {
+  //       profilePic: downloadURL,
+  //     });
+
+  //     Alert.alert('Success', 'Profile picture updated successfully.');
+  //   } catch (error) {
+  //     Alert.alert('Error', 'Unable to update profile picture.');
+  //   }
+  // };
 
   if (loading) {
     return (
@@ -146,23 +239,24 @@ const Profile = () => {
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <View style={styles.icon}>
-              <Text>X</Text>
-            </View>
+
           </TouchableOpacity>
-          <Text style={styles.title}></Text>
         </View>
 
         <View style={styles.imageContainer}>
           <Image
-            source={profilePic ? { uri: profilePic } : require('../assets/default-profile.png')}
+            source={profilePic ? { uri: profilePic } : { uri: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png' }}
             style={styles.profileImage}
           />
         </View>
 
+        {/* <TouchableOpacity style={styles.editButton} onPress={pickImage}>
+          <Text style={styles.editButtonText}>Edit Profile Photo</Text>
+        </TouchableOpacity> */}
         <TouchableOpacity style={styles.editButton} onPress={pickImage}>
           <Text style={styles.editButtonText}>Edit Profile Photo</Text>
         </TouchableOpacity>
+
 
         {/* Profile Update Form */}
         <View style={styles.inputContainer}>
@@ -230,7 +324,6 @@ const Profile = () => {
 };
 
 const styles = StyleSheet.create({
-  // Style definitions
   container: {
     flex: 1,
     backgroundColor: 'white',
@@ -286,21 +379,18 @@ const styles = StyleSheet.create({
     borderColor: '#dbe1e6',
     borderRadius: 10,
     padding: 12,
-    backgroundColor: 'white',
-    color: '#111518',
+    backgroundColor: '#f9f9f9',
   },
   button: {
-    backgroundColor: '#f0f2f5',
+    backgroundColor: '#000',
     paddingVertical: 12,
-    paddingHorizontal: 16,
     borderRadius: 10,
-    alignSelf: 'center',
     marginVertical: 8,
+    alignItems: 'center',
   },
   buttonText: {
-    color: '#111518',
+    color: 'white',
     fontWeight: 'bold',
-    textAlign: 'center',
   },
 });
 

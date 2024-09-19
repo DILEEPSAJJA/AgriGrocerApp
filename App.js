@@ -8,6 +8,7 @@ import SplashScreenComponent from './screens/SplashScreenComponent';
 import FarmerDashboard from './screens/FarmerDashboard';
 import OrganisationDashboard from './screens/OrganizationDashboard';
 import CustomerDashboard from './screens/CustomerDashboard';
+import Wishlist from './screens/Wishlist';
 import Logout from './screens/Logout';
 import { auth, firestore } from './utils/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -63,6 +64,7 @@ const App = () => {
         <Stack.Screen name="FarmerDashboard" component={FarmerDashboard} />
         <Stack.Screen name="OrganizationDashboard" component={OrganisationDashboard} />
         <Stack.Screen name="CustomerDashboard" component={CustomerDashboard} />
+        <Stack.Screen name="Wishlist" component={Wishlist} />
         <Stack.Screen name="Logout" component={Logout} />
       </Stack.Navigator>
       <Toast ref={(ref) => Toast.setRef(ref)} />

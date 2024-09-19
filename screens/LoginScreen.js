@@ -128,7 +128,7 @@
 // export default LoginScreen;
 
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, Modal, ImageBackground, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { auth, firestore } from '../utils/firebase';
@@ -143,6 +143,7 @@ const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isLoginSuccess, setIsLoginSuccess] = useState(false);
 
   const handleLogin = async () => {
     setLoading(true);
@@ -157,7 +158,8 @@ const LoginScreen = () => {
         throw new Error('No user data found');
       }
 
-      // Show success toast message
+      // Set login success to true to trigger toast
+      // setIsLoginSuccess(true);
       Toast.show({
         type: 'success',
         position: 'bottom',
@@ -195,6 +197,20 @@ const LoginScreen = () => {
       });
     }
   };
+
+  useEffect(() => {
+    if (isLoginSuccess) {
+      Toast.show({
+        type: 'success',
+        position: 'bottom',
+        text1: 'Login Successful',
+        text2: 'You have successfully logged in.',
+      });
+
+      // Reset the login success state to avoid multiple toasts
+      setIsLoginSuccess(false);
+    }
+  }, [isLoginSuccess]);
 
   return (
     <View style={styles.container}>
