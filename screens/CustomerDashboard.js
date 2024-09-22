@@ -1,12 +1,13 @@
 import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import Toast from 'react-native-toast-message';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import CustomerHome from './CustomerHome'; // Example screen
 import Myorders from './Myorders';
 import Offers from './Offers';
 import Profile from './Profile';
-import Logout from './Logout'; // Assume you have this screen
+import Logout from './Logout';
+import Wishlist from './Wishlist';
+import Cart from './Cart'; 
 
 const Drawer = createDrawerNavigator();
 
@@ -34,18 +35,32 @@ const CustomerDashboard = () => {
           drawerIcon: ({ color }) => <Icon name="home-outline" size={22} color={color} />,
         }}
       />
-       <Drawer.Screen
+      <Drawer.Screen
         name="Offers"
         component={Offers}
         options={{
-          drawerIcon: ({ color }) => <Icon name="home-outline" size={22} color={color} />,
+          drawerIcon: ({ color }) => <Icon name="tag-outline" size={22} color={color} />,
         }}
       />
       <Drawer.Screen
         name="My Orders"
         component={Myorders}
         options={{
-          drawerIcon: ({ color }) => <Icon name="home-outline" size={22} color={color} />,
+          drawerIcon: ({ color }) => <Icon name="package-variant-closed" size={22} color={color} />,
+        }}
+      />
+      <Drawer.Screen
+        name="WishList"
+        component={Wishlist}
+        options={{
+          drawerIcon: ({ color }) => <Icon name="heart-outline" size={22} color={color} />,
+        }}
+      />
+      <Drawer.Screen
+        name="Cart"
+        component={Cart}
+        options={{
+          drawerIcon: ({ color }) => <Icon name="cart-outline" size={22} color={color} />,
         }}
       />
       <Drawer.Screen

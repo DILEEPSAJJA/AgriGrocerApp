@@ -10,6 +10,7 @@ import OrganisationDashboard from './screens/OrganizationDashboard';
 import CustomerDashboard from './screens/CustomerDashboard';
 import Wishlist from './screens/Wishlist';
 import Logout from './screens/Logout';
+import Cart from './screens/Cart';
 import { auth, firestore } from './utils/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import Toast from 'react-native-toast-message';
@@ -65,6 +66,7 @@ const App = () => {
         <Stack.Screen name="OrganizationDashboard" component={OrganisationDashboard} />
         <Stack.Screen name="CustomerDashboard" component={CustomerDashboard} />
         <Stack.Screen name="Wishlist" component={Wishlist} />
+        <Stack.Screen name="Cart" component={Cart} />
         <Stack.Screen name="Logout" component={Logout} />
       </Stack.Navigator>
       <Toast ref={(ref) => Toast.setRef(ref)} />

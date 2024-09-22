@@ -229,7 +229,6 @@ export default class Item extends React.Component {
             />
           </TouchableOpacity>
 
-          {/* Add to Cart Button */}
           <TouchableOpacity
             style={{
               backgroundColor: "black",
