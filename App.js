@@ -13,6 +13,7 @@ import Logout from './screens/Logout';
 import Cart from './screens/Cart';
 import Vegetables from './screens/Vegetables';
 import Species from './screens/Species';
+import Payment from './screens/Payment';
 import DairyProducts from './screens/DairyProducts';
 import { auth, firestore } from './utils/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -73,6 +74,7 @@ const App = () => {
         <Stack.Screen name="Fruits" component={Fruits} />
         <Stack.Screen name="Vegetables" component={Vegetables} />
         <Stack.Screen name="Species" component={Species} />
+        <Stack.Screen name="Payment" component={Payment} />
         <Stack.Screen name="DairyProducts" component={DairyProducts} />
         <Stack.Screen name="Cart" component={Cart} />
         <Stack.Screen name="Logout" component={Logout} />
