@@ -14,7 +14,7 @@
 
 // const CustomerHome = () => {
 //   const navigation = useNavigation();
-  
+
 //   // States for products and categories
 //   const [product, setProduct] = useState([]);
 //   const [allProduct, setAllProduct] = useState([]);
@@ -129,6 +129,8 @@
 
 // export default CustomerHome;
 
+
+
 import React, { useEffect, useState } from 'react';
 import {
   SafeAreaView,
@@ -150,6 +152,8 @@ import { colors, sizes, fonts } from "../constants/Theme";
 import { RectButton, BorderlessButton } from "react-native-gesture-handler";
 import Category from "../components/Category";
 import Item from "../components/Item";
+import Fruits from "./Fruits";
+import Vegetables from './Vegetables';
 
 const { width, height } = Dimensions.get("window");
 
@@ -218,9 +222,7 @@ export default class Home extends React.Component {
                 showsHorizontalScrollIndicator={false}
               >
                 <TouchableOpacity
-                  onPress={() =>
-                    navigation.navigate("Category", { type: "male" })
-                  }
+                  onPress={() => navigation.navigate("Fruits")}
                 >
                   <Category
                     imgSrc={require("../assets/images/fruits.jpg")}
@@ -230,9 +232,7 @@ export default class Home extends React.Component {
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  onPress={() =>
-                    navigation.navigate("Category", { type: "female" })
-                  }
+                  onPress={() => navigation.navigate("Vegetables")}
                 >
                   <Category
                     imgSrc={require("../assets/images/vegetables.jpg")}
@@ -242,9 +242,7 @@ export default class Home extends React.Component {
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  onPress={() =>
-                    navigation.navigate("Category", { type: "kid" })
-                  }
+                  onPress={() => navigation.navigate("DairyProducts")}
                 >
                   <Category
                     imgSrc={require("../assets/images/diary.jpg")}
@@ -253,17 +251,15 @@ export default class Home extends React.Component {
                   />
                 </TouchableOpacity>
 
-                {/* <TouchableOpacity
-                  onPress={() =>
-                    navigation.navigate("Category", { type: "home" })
-                  }
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("Species")}
                 >
                   <Category
                     imgSrc={require("../assets/images/home_display.jpg")}
-                    name="Home"
-                    textBgColor="purple"
+                    name="grains and speices"
+                    textBgColor="black"
                   />
-                </TouchableOpacity> */}
+                </TouchableOpacity>
 
               </ScrollView>
             </View>
