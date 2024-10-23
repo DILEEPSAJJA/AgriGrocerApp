@@ -1,11 +1,13 @@
 import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import FarmerHome from './FarmerHome'; // Example screen
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'; // Corrected import
+import AntDesign from 'react-native-vector-icons/AntDesign'; // Corrected import
+import FarmerHome from './FarmerHome';
 import WareHouse from './WareHouse';
+import Schemes from './Schemes';
 import Profile from './Profile';
-import Logout from './Logout'; // Assume you have this screen
-import CustomDrawerContent from './CustomDrawerContent'; // Adjust the import path as needed
+import Logout from './Logout'; 
+import CustomDrawerContent from './CustomDrawerContent'; 
 
 const Drawer = createDrawerNavigator();
 
@@ -31,28 +33,45 @@ const FarmerDashboard = () => {
         name="FarmerHome"
         component={FarmerHome}
         options={{
-          drawerIcon: ({ color }) => <Icon name="home-outline" size={22} color={color} />,
+          drawerIcon: ({ color }) => (
+            <MaterialCommunityIcons name="home-outline" size={22} color={color} />
+          ),
         }}
       />
       <Drawer.Screen
         name="WareHouse"
         component={WareHouse}
         options={{
-          drawerIcon: ({ color }) => <Icon name="warehouse" size={22} color={color} />,
+          drawerIcon: ({ color }) => (
+            <MaterialCommunityIcons name="warehouse" size={22} color={color} />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="Schemes"
+        component={Schemes}
+        options={{
+          drawerIcon: ({ color }) => (
+            <AntDesign name="idcard" size={22} color={color} />
+          ),
         }}
       />
       <Drawer.Screen
         name="Profile"
         component={Profile}
         options={{
-          drawerIcon: ({ color }) => <Icon name="account-outline" size={22} color={color} />,
+          drawerIcon: ({ color }) => (
+            <MaterialCommunityIcons name="account-outline" size={22} color={color} />
+          ),
         }}
       />
       <Drawer.Screen
         name="Logout"
         component={Logout}
         options={{
-          drawerIcon: ({ color }) => <Icon name="logout" size={22} color={color} />,
+          drawerIcon: ({ color }) => (
+            <MaterialCommunityIcons name="logout" size={22} color={color} />
+          ),
         }}
       />
     </Drawer.Navigator>

@@ -9,6 +9,7 @@ import FarmerDashboard from './screens/FarmerDashboard';
 import OrganisationDashboard from './screens/OrganizationDashboard';
 import CustomerDashboard from './screens/CustomerDashboard';
 import Wishlist from './screens/Wishlist';
+import Schemes from './screens/Schemes';
 import Logout from './screens/Logout';
 import Cart from './screens/Cart';
 import { auth, firestore } from './utils/firebase';
@@ -66,6 +67,7 @@ const App = () => {
         <Stack.Screen name="OrganizationDashboard" component={OrganisationDashboard} />
         <Stack.Screen name="CustomerDashboard" component={CustomerDashboard} />
         <Stack.Screen name="Wishlist" component={Wishlist} />
+        <Stack.Screen name="Schemes" component={Schemes} />
         <Stack.Screen name="Cart" component={Cart} />
         <Stack.Screen name="Logout" component={Logout} />
       </Stack.Navigator>
