@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { SafeAreaView, StyleSheet, View, Text, TextInput, Button, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons'; // To use the trash icon
 import { auth, firestore } from '../utils/firebase'; // Import Firebase utilities
-import { doc, getDoc, updateDoc } from 'firebase/firestore'; // Firestore methods
+import { doc, getDoc, updateDoc, collection, addDoc, getDocs, deleteDoc } from 'firebase/firestore'; // Firestore methods 
 
 const FarmerHome = () => {
   const [farmerName, setFarmerName] = useState('');
@@ -12,6 +12,7 @@ const FarmerHome = () => {
   const [itemName, setItemName] = useState('');
   const [quantity, setQuantity] = useState('');
   const [items, setItems] = useState([]);
+  const [allItems, setAllItems] = useState([]); // State to hold all items from Firestore
 
   // User info fetched from Firestore
   const [userName, setUserName] = useState('');
@@ -85,12 +86,56 @@ const FarmerHome = () => {
     }
   };
 
-  const handleItemsSubmit = () => {
+  const handleItemsSubmit = async () => {
     if (items.length > 0) {
-      Alert.alert('Items Submitted', 'Items list has been submitted successfully!');
-      setItems([]); // Clear the items list
+      try {
+        const user = auth.currentUser;
+        if (user) {
+          // Save each item in Firestore
+          const itemsCollection = collection(firestore, 'Items');
+          await Promise.all(
+            items.map(item => addDoc(itemsCollection, {
+              farmerId: user.uid,
+              itemName: item.itemName,
+              quantity: item.quantity,
+            }))
+          );
+
+          Alert.alert('Items Submitted', 'Items list has been submitted successfully!');
+          setItems([]); // Clear the items list
+        }
+      } catch (error) {
+        Alert.alert('Error', 'Unable to submit items.');
+      }
     } else {
       Alert.alert('No Items', 'Please add some items before submitting.');
+    }
+  };
+
+  const fetchAllItems = async () => {
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        const itemsCollection = collection(firestore, 'Items');
+        const itemsSnapshot = await getDocs(itemsCollection);
+        const fetchedItems = itemsSnapshot.docs
+          .map(doc => ({ id: doc.id, ...doc.data() }))
+          .filter(item => item.farmerId === user.uid); // Filter by farmer ID
+
+        setAllItems(fetchedItems);
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Unable to fetch items.');
+    }
+  };
+
+  const removeItemFromFirestore = async (itemId) => {
+    try {
+      await deleteDoc(doc(firestore, 'Items', itemId)); // Delete item from Firestore
+      setAllItems(allItems.filter(item => item.id !== itemId)); // Update local state
+      Alert.alert('Success', 'Item removed successfully!');
+    } catch (error) {
+      Alert.alert('Error', 'An error occurred while removing the item.');
     }
   };
 
@@ -161,7 +206,7 @@ const FarmerHome = () => {
             />
             <TextInput
               style={[styles.input, { flex: 1 }]}
-              placeholder="Quantity"
+              placeholder="Quantity (Kg)"
               keyboardType="numeric"
               value={quantity}
               onChangeText={setQuantity}
@@ -174,7 +219,7 @@ const FarmerHome = () => {
             <View style={styles.itemList}>
               {items.map((item, index) => (
                 <View key={index} style={styles.itemContainer}>
-                  <Text>{item.itemName} - {item.quantity}</Text>
+                  <Text>{item.itemName} - {item.quantity} Kg</Text>
                   <TouchableOpacity onPress={() => removeItem(index)}>
                     <FontAwesome name="trash" size={24} color="red" />
                   </TouchableOpacity>
@@ -187,6 +232,32 @@ const FarmerHome = () => {
           <TouchableOpacity style={styles.submitButton} onPress={handleItemsSubmit}>
             <Text style={styles.submitButtonText}>Submit Items</Text>
           </TouchableOpacity>
+
+          {/* Display All Items Button */}
+          <TouchableOpacity style={styles.displayButton} onPress={fetchAllItems}>
+            <Text style={styles.displayButtonText}>Display All Items</Text>
+          </TouchableOpacity>
+
+          {/* Display All Items in a Table */}
+          {allItems.length > 0 && (
+            <View style={styles.table}>
+              <Text style={styles.tableHeader}>All Items</Text>
+              <View style={styles.tableRow}>
+                <Text style={styles.tableCellBold}>Item</Text>
+                <Text style={styles.tableCellBold}>Qty (Kg)</Text>
+                <Text style={styles.tableCellBold}>Actions</Text>
+              </View>
+              {allItems.map(item => (
+                <View key={item.id} style={styles.tableRow}>
+                  <Text style={styles.tableCell}>{item.itemName}</Text>
+                  <Text style={styles.tableCell}>{item.quantity}</Text>
+                  <TouchableOpacity onPress={() => removeItemFromFirestore(item.id)}>
+                    <FontAwesome name="trash" size={24} color="red" />
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </View>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -284,6 +355,46 @@ const styles = StyleSheet.create({
     color: '#000',
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  displayButton: {
+    backgroundColor: '#add8e6',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginTop: 20,
+  },
+  displayButtonText: {
+    color: '#000',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  table: {
+    marginTop: 20,
+    width: '100%',
+    backgroundColor: '#f9f9f9',
+    borderRadius: 10,
+    padding: 10,
+  },
+  tableHeader: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  tableRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  tableCell: {
+    fontSize: 14,
+    color: '#333',
+  },
+  tableCellBold: {
+    fontSize: 14,
+    color: '#333',
+    fontWeight: 'bold', // Bold text for headers
   },
 });
 
