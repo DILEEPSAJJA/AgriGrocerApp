@@ -14,7 +14,11 @@
 
 // const CustomerHome = () => {
 //   const navigation = useNavigation();
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> parent of a174bc7 (Feat: Customer Module Completed.)
 //   // States for products and categories
 //   const [product, setProduct] = useState([]);
 //   const [allProduct, setAllProduct] = useState([]);
@@ -129,6 +133,11 @@
 
 // export default CustomerHome;
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> parent of a174bc7 (Feat: Customer Module Completed.)
 import React, { useEffect, useState } from 'react';
 import {
   SafeAreaView,

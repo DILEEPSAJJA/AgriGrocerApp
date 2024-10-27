@@ -11,6 +11,12 @@ import CustomerDashboard from './screens/CustomerDashboard';
 import Wishlist from './screens/Wishlist';
 import Logout from './screens/Logout';
 import Cart from './screens/Cart';
+<<<<<<< HEAD
+=======
+import Vegetables from './screens/Vegetables';
+import Species from './screens/Species';
+import DairyProducts from './screens/DairyProducts';
+>>>>>>> parent of a174bc7 (Feat: Customer Module Completed.)
 import { auth, firestore } from './utils/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import Toast from 'react-native-toast-message';
@@ -66,6 +72,13 @@ const App = () => {
         <Stack.Screen name="OrganizationDashboard" component={OrganisationDashboard} />
         <Stack.Screen name="CustomerDashboard" component={CustomerDashboard} />
         <Stack.Screen name="Wishlist" component={Wishlist} />
+<<<<<<< HEAD
+=======
+        <Stack.Screen name="Fruits" component={Fruits} />
+        <Stack.Screen name="Vegetables" component={Vegetables} />
+        <Stack.Screen name="Species" component={Species} />
+        <Stack.Screen name="DairyProducts" component={DairyProducts} />
+>>>>>>> parent of a174bc7 (Feat: Customer Module Completed.)
         <Stack.Screen name="Cart" component={Cart} />
         <Stack.Screen name="Logout" component={Logout} />
       </Stack.Navigator>
