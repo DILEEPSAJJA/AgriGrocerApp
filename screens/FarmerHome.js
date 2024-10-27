@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useState, useEffect } from 'react';
 import { SafeAreaView, StyleSheet, View, Text, TextInput, Button, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons'; // To use the trash icon
@@ -13,42 +14,67 @@ const FarmerHome = () => {
   const [quantity, setQuantity] = useState('');
   const [items, setItems] = useState([]);
   const [allItems, setAllItems] = useState([]); // State to hold all items from Firestore
+=======
+import React, { useState, useEffect, useCallback } from 'react';
+import { SafeAreaView, StyleSheet, View, Text, Image, Button, ActivityIndicator } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { collection, getDocs, getFirestore, query, where } from "firebase/firestore";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import app from '../utils/firebase';
 
-  // User info fetched from Firestore
-  const [userName, setUserName] = useState('');
-  const [userEmail, setUserEmail] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [address, setAddress] = useState('');
+const FarmerHome = () => {
+  const navigation = useNavigation();
+  const [profileImageUrl, setProfileImageUrl] = useState(null);
+  const [userName, setUserName] = useState("");
+  const [loading, setLoading] = useState(true);
+>>>>>>> parent of 05a304d (Updated by bhuvanesh Added farmer home page displays farmer details forms and add item functionalities alll the changed data will be reflected in database as well as screen)
+
+  const fetchUserImage = useCallback(async (userName) => {
+    try {
+      const db = getFirestore(app);
+      const profilesRef = collection(db, "Users");
+      const q = query(profilesRef, where("name", "==", userName));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        const doc = querySnapshot.docs[0];
+        const data = doc.data();
+        setProfileImageUrl(
+          data.profileImage || // Use profile image from Firestore
+          "https://cdn.usegalileo.ai/stability/40da8e6a-16f8-4274-80c2-9c349493caaa.png" // Default image URL
+        );
+      } else {
+        setProfileImageUrl(
+          "https://cdn.usegalileo.ai/stability/40da8e6a-16f8-4274-80c2-9c349493caaa.png" // Default image if no match found
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching user image:", error);
+      setProfileImageUrl(
+        "https://cdn.usegalileo.ai/stability/40da8e6a-16f8-4274-80c2-9c349493caaa.png" // Default image in case of error
+      );
+    }
+  }, []);
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const user = auth.currentUser;
-        if (user) {
-          const userDoc = await getDoc(doc(firestore, 'Users', user.uid));
-          const userData = userDoc.data();
-          if (userData) {
-            // Set state with user data
-            setUserName(userData.name || 'Unknown');
-            setUserEmail(userData.email || 'Unknown');
-            setPhoneNumber(userData.phoneNumber || '');
-            setAddress(userData.address || '');
-
-            // Populate the farmer details form with user data
-            setFarmerName(userData.name || '');
-            setFarmerEmail(userData.email || '');
-            setFarmerPhone(userData.phoneNumber || '');
-            setFarmerAddress(userData.address || '');
-          }
+        const name = await AsyncStorage.getItem("name");
+        if (name !== null) {
+          setUserName(name);
+          fetchUserImage(name);
         }
       } catch (error) {
-        Alert.alert('Error', 'Unable to fetch user data.');
+        console.error("Error fetching user data:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchUserData();
-  }, []);
+  }, [fetchUserImage]);
 
+<<<<<<< HEAD
   const addItem = () => {
     if (itemName && quantity) {
       setItems([...items, { itemName, quantity }]);
@@ -111,6 +137,15 @@ const FarmerHome = () => {
       Alert.alert('No Items', 'Please add some items before submitting.');
     }
   };
+=======
+  if (loading) {
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+>>>>>>> parent of 05a304d (Updated by bhuvanesh Added farmer home page displays farmer details forms and add item functionalities alll the changed data will be reflected in database as well as screen)
 
   const fetchAllItems = async () => {
     try {
@@ -141,27 +176,17 @@ const FarmerHome = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        
-        {/* Display User Information */}
-        <View style={styles.userInfoContainer}>
-          <Text style={styles.userInfoText}>Name: {userName}</Text>
-          <Text style={styles.userInfoText}>Email: {userEmail}</Text>
-          <Text style={styles.userInfoText}>Phone: {phoneNumber}</Text>
-          <Text style={styles.userInfoText}>Address: {address}</Text>
-        </View>
-
-        {/* Farmer's Details Form */}
-        <View style={styles.form}>
-          <Text style={styles.formTitle}>Update Farmer's Details</Text>
-
-          {/* Farmer Name */}
-          <TextInput
-            style={styles.input}
-            placeholder="Farmer's Name"
-            value={farmerName}
-            onChangeText={setFarmerName}
+      <View style={styles.content}>
+        <View style={styles.profile}>
+          <Image
+            style={styles.profileImage}
+            source={{
+              uri:
+                profileImageUrl ||
+                "https://cdn.usegalileo.ai/stability/40da8e6a-16f8-4274-80c2-9c349493caaa.png",
+            }}
           />
+<<<<<<< HEAD
 
           {/* Farmer Email */}
           <TextInput
@@ -258,8 +283,15 @@ const FarmerHome = () => {
               ))}
             </View>
           )}
+=======
+          <View style={styles.profileText}>
+            <Text style={styles.title}>Welcome, {userName || "Farmer"}!</Text>
+          </View>
+>>>>>>> parent of 05a304d (Updated by bhuvanesh Added farmer home page displays farmer details forms and add item functionalities alll the changed data will be reflected in database as well as screen)
         </View>
-      </ScrollView>
+        <Button title="Go to Profile" onPress={() => navigation.navigate('Profile')} />
+        {/* Add more buttons or components based on your app's features */}
+      </View>
     </SafeAreaView>
   );
 };
@@ -269,92 +301,38 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
   },
-  scrollViewContent: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 20,
-  },
-  userInfoContainer: {
-    width: '90%',
-    padding: 20,
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    marginBottom: 20,
-    elevation: 3,
-  },
-  userInfoText: {
-    fontSize: 16,
-    marginBottom: 10,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  form: {
-    width: '90%',
+  content: {
+    width: '80%',
     padding: 20,
     backgroundColor: '#fff',
     borderRadius: 10,
     elevation: 3,
     alignItems: 'center',
-    marginBottom: 20,
   },
-  formTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    color: '#333',
-  },
-  input: {
-    width: '100%',
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 10,
-    marginBottom: 10,
-    backgroundColor: '#f9f9f9',
-  },
-  row: {
+  profile: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-  },
-  itemList: {
-    marginTop: 20,
-    width: '100%',
-  },
-  itemContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
-    padding: 10,
-    backgroundColor: '#f9f9f9',
-    borderRadius: 10,
+    marginBottom: 20,
   },
-  updateButton: {
-    backgroundColor: '#8fbc8f',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-    marginTop: 10,
+  profileImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    borderColor: "#ccc",
+    borderWidth: 2,
   },
-  updateButtonText: {
-    color: '#fff',
+  profileText: {
+    marginLeft: 16,
+  },
+  title: {
+    fontSize: 24,
     fontWeight: 'bold',
-    fontSize: 16,
   },
-  submitButton: {
-    backgroundColor: '#d3d3d3',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-    marginTop: 20,
-  },
-  submitButtonText: {
-    color: '#000',
-    fontWeight: 'bold',
-    fontSize: 16,
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   displayButton: {
     backgroundColor: '#add8e6',

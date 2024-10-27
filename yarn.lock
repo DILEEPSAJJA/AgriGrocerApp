@@ -2652,6 +2652,7 @@
   integrity sha512-rQfMIGSR/1r/SyN87+VD8xHHzDYeHaJq6elOSCAD+0iLagXkSI2pfA0LmSXP21uw5i3em7GkkRjfJ8wpqWXZNw==
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 "@react-native-community/viewpager@^5.0.11":
   version "5.0.11"
   resolved "https://registry.npmjs.org/@react-native-community/viewpager/-/viewpager-5.0.11.tgz"
@@ -2664,6 +2665,9 @@
 >>>>>>> parent of fac0a30 (Updated by bhuvanesh added crud operation to the dispaly items in home page of farmer and also statically implemented schemes to farmers scheme page)
 "@react-native-firebase/app@^20.5.0", "@react-native-firebase/app@20.5.0":
 >>>>>>> parent of 2b9fa6c (new commit)
+=======
+"@react-native-firebase/app@^20.5.0", "@react-native-firebase/app@20.4.0":
+>>>>>>> parent of 05a304d (Updated by bhuvanesh Added farmer home page displays farmer details forms and add item functionalities alll the changed data will be reflected in database as well as screen)
   version "20.5.0"
   resolved "https://registry.npmjs.org/@react-native-firebase/app/-/app-20.5.0.tgz"
   integrity sha512-zW6jc9R8Ikxxo5qXv25No6QxdWOx37D4U0ppKZQoY6CzwGUzqc4oQUU9MclbUcx+H5p+GEzvT1EIGV6JG7/FAg==
