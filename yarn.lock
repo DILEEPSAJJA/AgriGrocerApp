@@ -2651,6 +2651,7 @@
   resolved "https://registry.npmjs.org/@react-native-community/masked-view/-/masked-view-0.1.11.tgz"
   integrity sha512-rQfMIGSR/1r/SyN87+VD8xHHzDYeHaJq6elOSCAD+0iLagXkSI2pfA0LmSXP21uw5i3em7GkkRjfJ8wpqWXZNw==
 
+<<<<<<< HEAD
 "@react-native-community/viewpager@^5.0.11":
   version "5.0.11"
   resolved "https://registry.npmjs.org/@react-native-community/viewpager/-/viewpager-5.0.11.tgz"
@@ -2659,6 +2660,8 @@
 <<<<<<< HEAD
 "@react-native-firebase/app@^20.5.0":
 =======
+=======
+>>>>>>> parent of fac0a30 (Updated by bhuvanesh added crud operation to the dispaly items in home page of farmer and also statically implemented schemes to farmers scheme page)
 "@react-native-firebase/app@^20.5.0", "@react-native-firebase/app@20.5.0":
 >>>>>>> parent of 2b9fa6c (new commit)
   version "20.5.0"
