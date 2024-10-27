@@ -6,7 +6,7 @@ import Myorders from './Myorders';
 import Offers from './Offers';
 import Profile from './Profile';
 import Logout from './Logout';
-import Wishlist from './Wishlist';
+//import Wishlist from './Wishlist';
 import Cart from './Cart'; 
 
 const Drawer = createDrawerNavigator();
@@ -49,13 +49,13 @@ const CustomerDashboard = () => {
           drawerIcon: ({ color }) => <Icon name="package-variant-closed" size={22} color={color} />,
         }}
       />
-      <Drawer.Screen
+      {/* <Drawer.Screen
         name="WishList"
         component={Wishlist}
         options={{
           drawerIcon: ({ color }) => <Icon name="heart-outline" size={22} color={color} />,
         }}
-      />
+      /> */}
       <Drawer.Screen
         name="Cart"
         component={Cart}

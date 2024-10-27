@@ -12,9 +12,14 @@ import Wishlist from './screens/Wishlist';
 import Schemes from './screens/Schemes';
 import Logout from './screens/Logout';
 import Cart from './screens/Cart';
+import Vegetables from './screens/Vegetables';
+import Species from './screens/Species';
+import Payment from './screens/Payment';
+import DairyProducts from './screens/DairyProducts';
 import { auth, firestore } from './utils/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import Toast from 'react-native-toast-message';
+import Fruits from './screens/Fruits';
 
 const Stack = createStackNavigator();
 
@@ -67,7 +72,6 @@ const App = () => {
         <Stack.Screen name="OrganizationDashboard" component={OrganisationDashboard} />
         <Stack.Screen name="CustomerDashboard" component={CustomerDashboard} />
         <Stack.Screen name="Wishlist" component={Wishlist} />
-        <Stack.Screen name="Schemes" component={Schemes} />
         <Stack.Screen name="Cart" component={Cart} />
         <Stack.Screen name="Logout" component={Logout} />
       </Stack.Navigator>
