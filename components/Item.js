@@ -121,8 +121,6 @@
 //   }
 // }
 
-
-
 import React from "react";
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -224,16 +222,23 @@ export default class Item extends React.Component {
         >
           {/* Wishlist Icon */}
           <TouchableOpacity onPress={this.handleWishlistToggle}>
-            {/* <Icon
+            <Icon
               name={isWishlisted ? "heart" : "heart-o"} // Filled or empty heart icon
               size={24}
               color={isWishlisted ? "red" : "black"}
-            /> */}
+            />
           </TouchableOpacity>
 
           <TouchableOpacity
+            style={{
+              backgroundColor: "black",
+              paddingVertical: 10,
+              paddingHorizontal: 20,
+              borderRadius: 5,
+            }}
+            onPress={this.handleAddToCart}
           >
-      
+            <Text style={{ color: "white" }}>Add to Cart</Text>
           </TouchableOpacity>
         </View>
       </View>
