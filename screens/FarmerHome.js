@@ -64,6 +64,33 @@ const FarmerHome = () => {
     );
   }
 
+  const fetchAllItems = async () => {
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        const itemsCollection = collection(firestore, 'Items');
+        const itemsSnapshot = await getDocs(itemsCollection);
+        const fetchedItems = itemsSnapshot.docs
+          .map(doc => ({ id: doc.id, ...doc.data() }))
+          .filter(item => item.farmerId === user.uid); // Filter by farmer ID
+
+        setAllItems(fetchedItems);
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Unable to fetch items.');
+    }
+  };
+
+  const removeItemFromFirestore = async (itemId) => {
+    try {
+      await deleteDoc(doc(firestore, 'Items', itemId)); // Delete item from Firestore
+      setAllItems(allItems.filter(item => item.id !== itemId)); // Update local state
+      Alert.alert('Success', 'Item removed successfully!');
+    } catch (error) {
+      Alert.alert('Error', 'An error occurred while removing the item.');
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
@@ -124,6 +151,46 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  displayButton: {
+    backgroundColor: '#add8e6',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginTop: 20,
+  },
+  displayButtonText: {
+    color: '#000',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  table: {
+    marginTop: 20,
+    width: '100%',
+    backgroundColor: '#f9f9f9',
+    borderRadius: 10,
+    padding: 10,
+  },
+  tableHeader: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  tableRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  tableCell: {
+    fontSize: 14,
+    color: '#333',
+  },
+  tableCellBold: {
+    fontSize: 14,
+    color: '#333',
+    fontWeight: 'bold', // Bold text for headers
   },
 });
 
