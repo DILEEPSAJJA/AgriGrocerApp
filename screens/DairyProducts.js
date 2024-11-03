@@ -106,7 +106,7 @@ const DairyProducts = () => {
                   onPress={() => handleQuantityChange(item.id, item.quantity || 0, -1)} 
                   disabled={(item.quantity || 0) === 0}
                 >
-                  <Text style={styles.quantityButtonText}>-</Text>
+                  <Text style={styles.quantityButtonText}>remove</Text>
                 </TouchableOpacity>
 
                 <Text style={styles.quantityText}>{item.quantity || 0}</Text>
@@ -116,7 +116,7 @@ const DairyProducts = () => {
                   onPress={() => handleQuantityChange(item.id, item.quantity || 0, 1)} 
                   disabled={(item.quantity || 0) >= 10}
                 >
-                  <Text style={styles.quantityButtonText}>+</Text>
+                  <Text style={styles.quantityButtonText}>ADD</Text>
                 </TouchableOpacity>
               </View>
 

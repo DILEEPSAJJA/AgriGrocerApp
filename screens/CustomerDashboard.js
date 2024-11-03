@@ -50,13 +50,6 @@ const CustomerDashboard = () => {
         }}
       />
       <Drawer.Screen
-        name="WishList"
-        component={Wishlist}
-        options={{
-          drawerIcon: ({ color }) => <Icon name="heart-outline" size={22} color={color} />,
-        }}
-      />
-      <Drawer.Screen
         name="Cart"
         component={Cart}
         options={{

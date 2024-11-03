@@ -128,7 +128,7 @@ export default class Home extends React.Component {
                   paddingHorizontal: sizes.padding,
                 }}
               >
-                More to Love
+              Special Offers
               </Text>
             </View>
             <View

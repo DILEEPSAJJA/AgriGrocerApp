@@ -11,6 +11,7 @@ import CustomerDashboard from './screens/CustomerDashboard';
 import Wishlist from './screens/Wishlist';
 import Logout from './screens/Logout';
 import Cart from './screens/Cart';
+import MyOrders from './screens/Myorders';
 import Vegetables from './screens/Vegetables';
 import Species from './screens/Species';
 import Payment from './screens/Payment';
@@ -72,6 +73,7 @@ const App = () => {
         <Stack.Screen name="CustomerDashboard" component={CustomerDashboard} />
         <Stack.Screen name="Wishlist" component={Wishlist} />
         <Stack.Screen name="Fruits" component={Fruits} />
+        <Stack.Screen name="MyOrders" component={MyOrders} />
         <Stack.Screen name="Vegetables" component={Vegetables} />
         <Stack.Screen name="Species" component={Species} />
         <Stack.Screen name="Payment" component={Payment} />

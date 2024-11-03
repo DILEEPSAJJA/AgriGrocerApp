@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "AgriGrocerApp",
-    "slug": "AgriGrocerApp",
+    "slug": "agrigrocerapp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -18,10 +18,17 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.dileepsajja.agrigrocerapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "d651611a-8c94-4764-a4bc-42281a8e8dc0"
+      }
+    },
+    "owner": "dileepsajja"
   }
 }
