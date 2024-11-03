@@ -7,18 +7,19 @@ import {
   ActivityIndicator,
   StyleSheet,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
-import { firestore } from '../utils/firebase';
-import { collection, onSnapshot, doc, deleteDoc } from 'firebase/firestore';
-import { useNavigation } from '@react-navigation/native'; 
+import { firestore, auth } from '../utils/firebase';
+import { collection, onSnapshot, doc, deleteDoc, addDoc } from 'firebase/firestore';
+import { useNavigation } from '@react-navigation/native';
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [totalAmount, setTotalAmount] = useState(0); 
-  const [totalQuantity, setTotalQuantity] = useState(0); 
+  const [totalAmount, setTotalAmount] = useState(0);
+  const [totalQuantity, setTotalQuantity] = useState(0);
   const [totalItems, setTotalItems] = useState(0);
-  const navigation = useNavigation(); 
+  const navigation = useNavigation();
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
@@ -58,11 +59,42 @@ const Cart = () => {
       await deleteDoc(doc(firestore, 'Cart', id));
     } catch (error) {
       console.error('Error removing item: ', error);
+      Alert.alert('Error', 'Failed to remove item. Please try again.');
     }
   };
 
-  const handleProceed = () => {
-    navigation.navigate('Payment', { totalAmount }); // Navigate to Payment and pass totalAmount
+  const handleProceed = async () => {
+    const user = auth.currentUser;
+    if (!user) {
+      Alert.alert('Error', 'You must be logged in to place an order.');
+      return;
+    }
+
+    try {
+      const orderData = {
+        userId: user.uid,
+        orderDate: new Date(),
+        items: cartItems,
+        totalAmount,
+        totalQuantity,
+        status: 'Pending',
+      };
+
+      const orderDocRef = await addDoc(collection(firestore, 'Orders'), orderData);
+      console.log('Order successfully added with ID:', orderDocRef.id);
+
+      // Remove items from Cart after placing order
+      const deletePromises = cartItems.map((item) =>
+        deleteDoc(doc(firestore, 'Cart', item.id))
+      );
+      await Promise.all(deletePromises);
+
+      // Navigate to Payment page with totalAmount
+      navigation.navigate('Payment', { totalAmount });
+    } catch (error) {
+      console.error('Error placing order:', error);
+      Alert.alert('Error', 'Failed to place order. Please try again.');
+    }
   };
 
   if (loading) {

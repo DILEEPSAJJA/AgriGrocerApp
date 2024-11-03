@@ -394,7 +394,7 @@ const styles = StyleSheet.create({
   tableCellBold: {
     fontSize: 14,
     color: '#333',
-    fontWeight: 'bold', // Bold text for headers
+    fontWeight: 'bold', 
   },
 });
 

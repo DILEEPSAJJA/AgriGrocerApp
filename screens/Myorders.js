@@ -1,38 +1,69 @@
-import React, { useEffect, useState } from 'react';
-import { SafeAreaView, StyleSheet, View, Text, FlatList, Image } from 'react-native';
-import { collection, getDocs, query, where } from 'firebase/firestore';
-import { auth, firestore } from '../utils/firebase'; // Adjust the import path as needed
+import React, { useEffect, useState, useCallback } from 'react';
+import { SafeAreaView, StyleSheet, View, Text, FlatList, Image, RefreshControl } from 'react-native';
+import { collection, onSnapshot, query, where } from 'firebase/firestore';
+import { auth, firestore } from '../utils/firebase';
 
 const MyOrders = () => {
   const [orders, setOrders] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchOrders = useCallback(() => {
+    const user = auth.currentUser;
+    if (user) {
+      const ordersCollection = collection(firestore, 'Orders');
+      const q = query(ordersCollection, where('userId', '==', user.uid));
+      
+      // Set up a real-time listener to fetch data
+      return onSnapshot(q, (snapshot) => {
+        const ordersList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setOrders(ordersList);
+      }, (error) => {
+        console.error('Error fetching orders: ', error);
+      });
+    }
+  }, []);
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const user = auth.currentUser;
-        if (user) {
-          const ordersCollection = collection(firestore, 'Orders');
-          const q = query(ordersCollection, where('userId', '==', user.uid));
-          const ordersSnapshot = await getDocs(q);
-          const ordersList = ordersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-          setOrders(ordersList);
-        }
-      } catch (error) {
-        console.error('Error fetching orders: ', error);
-      }
-    };
+    const unsubscribe = fetchOrders();
+    return unsubscribe; // Clean up the listener on component unmount
+  }, [fetchOrders]);
 
+  const onRefresh = async () => {
+    setRefreshing(true);
     fetchOrders();
-  }, []);
+    setRefreshing(false);
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'Delivered':
+        return '#28a745'; // Green
+      case 'Pending':
+        return '#dc3545'; // Red
+      case 'Packed at Nearby Warehouse':
+        return '#ffc107'; // Yellow
+      default:
+        return '#666'; // Default color for other statuses
+    }
+  };
 
   const renderOrderItem = ({ item }) => (
     <View style={styles.orderItem}>
-      <Image source={{ uri: item.productImage }} style={styles.orderImage} />
-      <View style={styles.orderDetails}>
-        <Text style={styles.orderTitle}>{item.productName}</Text>
-        <Text style={styles.orderStatus}>Status: {item.status}</Text>
-        <Text style={styles.orderDate}>Date: {new Date(item.orderDate.seconds * 1000).toLocaleDateString()}</Text>
-      </View>
+      {item.items.map((product, index) => (
+        <View key={index} style={styles.productItem}>
+          <Image source={{ uri: product.productImage }} style={styles.orderImage} />
+          <View style={styles.orderDetails}>
+            <Text style={styles.orderTitle}>Order Placed</Text>
+          </View>
+        </View>
+      ))}
+      <Text style={styles.orderTotal}>Order Total: ₹{item.totalAmount}</Text>
+      <Text style={[styles.orderStatus, { color: getStatusColor(item.status) }]}>
+        Status: {item.status}
+      </Text>
+      <Text style={styles.orderDate}>
+        Date: {new Date(item.orderDate.seconds * 1000).toLocaleDateString()}
+      </Text>
     </View>
   );
 
@@ -43,6 +74,9 @@ const MyOrders = () => {
         renderItem={renderOrderItem}
         keyExtractor={(item) => item.id}
         style={styles.ordersList}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       />
     </SafeAreaView>
   );
@@ -63,29 +97,36 @@ const styles = StyleSheet.create({
     padding: 10,
     marginVertical: 5,
     elevation: 3,
+  },
+  productItem: {
     flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 5,
   },
   orderImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 10,
+    width: 60,
+    height: 60,
+    borderRadius: 8,
     marginRight: 10,
   },
   orderDetails: {
     flex: 1,
-    justifyContent: 'center',
   },
   orderTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 5,
+  },
+  orderTotal: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginTop: 5,
   },
   orderStatus: {
     fontSize: 14,
-    color: '#666',
+    marginTop: 5,
   },
   orderDate: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#666',
   },
 });
