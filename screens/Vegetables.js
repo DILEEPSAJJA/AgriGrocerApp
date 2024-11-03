@@ -69,17 +69,25 @@ const Vegetables = () => {
   };
 
   const addToCart = async (item) => {
+    // Check if the quantity is 0 and show an alert if it is
+    if (item.quantity === 0) {
+      alert("Select at least one.");
+      return; // Stop further execution if quantity is 0
+    }
+  
     try {
+      // Add the item to the 'Cart' collection in Firestore with its details
       await addDoc(collection(firestore, 'Cart'), {
         name: item.Name,
         price: item.price,
-        quantity: item.quantity || 0,
+        quantity: item.quantity,
       });
       alert(`${item.Name} added to cart!`);
     } catch (error) {
       console.error("Error adding to cart:", error);
     }
   };
+  
 
   if (loading) {
     return <ActivityIndicator size="large" color="#FF4500" />;

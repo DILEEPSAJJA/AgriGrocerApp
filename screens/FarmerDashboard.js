@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import FarmerHome from './FarmerHome'; // Example screen
 import WareHouse from './WareHouse';
 import Profile from './Profile';
+import Schemes from './Schemes';
 import Logout from './Logout'; // Assume you have this screen
 import CustomDrawerContent from './CustomDrawerContent'; // Adjust the import path as needed
 
@@ -39,6 +40,13 @@ const FarmerDashboard = () => {
         component={WareHouse}
         options={{
           drawerIcon: ({ color }) => <Icon name="warehouse" size={22} color={color} />,
+        }}
+      />
+       <Drawer.Screen
+        name="Schemes"
+        component={Schemes}
+        options={{
+          drawerIcon: ({ color }) => <Icon name="sitemap" size={22} color={color} />,
         }}
       />
       <Drawer.Screen
