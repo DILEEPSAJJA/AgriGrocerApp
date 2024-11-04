@@ -15,7 +15,7 @@ const Payment = ({ route }) => {
   }, []);
 
   const initializePayment = () => {
-    const razorpayKey = 'rzp_test_GcZZFDPP0jHtC4'; // Replace with your Razorpay key
+    const razorpayKey = 'rzp_test_4mTemu0SvyMbaX'; // Replace with your Razorpay key
     const amountInPaise = totalAmount * 100;
     const checkoutUrl = `https://api.razorpay.com/v1/checkout/embedded?key_id=${razorpayKey}&amount=${amountInPaise}&name=AgriGrocer&description=Payment for order&prefill[email]=user@example.com&prefill[contact]=9191919191`;
 
