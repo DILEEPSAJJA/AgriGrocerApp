@@ -3,7 +3,9 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import Toast from 'react-native-toast-message';
 import OrgHome from './OrgHome';
+import WareHouse from './WareHouse';
 import Profile from './Profile';
+import Report from './Report';
 import Logout from './Logout';
 
 const Drawer = createDrawerNavigator();
@@ -30,6 +32,20 @@ const OrganisationDashboard = () => {
         component={OrgHome}
         options={{
           drawerIcon: ({ color }) => <Icon name="home-outline" size={22} color={color} />,
+        }}
+      />
+      <Drawer.Screen
+        name="Report"
+        component={Report}
+        options={{
+          drawerIcon: ({ color }) => <Icon name="Report" size={22} color={color} />,
+        }}
+      />
+      <Drawer.Screen
+        name="WareHouse"
+        component={WareHouse}
+        options={{
+          drawerIcon: ({ color }) => <Icon name="WareHouse" size={22} color={color} />,
         }}
       />
       <Drawer.Screen

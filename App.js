@@ -20,6 +20,8 @@ import { auth, firestore } from './utils/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import Toast from 'react-native-toast-message';
 import Fruits from './screens/Fruits';
+import WareHouse from './screens/WareHouse';
+import Report from './screens/Report';
 
 const Stack = createStackNavigator();
 
@@ -73,6 +75,8 @@ const App = () => {
         <Stack.Screen name="CustomerDashboard" component={CustomerDashboard} />
         <Stack.Screen name="Wishlist" component={Wishlist} />
         <Stack.Screen name="Fruits" component={Fruits} />
+        {/* <Stack.Screen name="WareHouse" component={WareHouse} /> */}
+        <Stack.Screen name="Report" component={Report} />
         <Stack.Screen name="MyOrders" component={MyOrders} />
         <Stack.Screen name="Vegetables" component={Vegetables} />
         <Stack.Screen name="Species" component={Species} />

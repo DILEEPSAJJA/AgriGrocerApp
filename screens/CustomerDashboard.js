@@ -6,7 +6,6 @@ import Myorders from './Myorders';
 import Offers from './Offers';
 import Profile from './Profile';
 import Logout from './Logout';
-import Wishlist from './Wishlist';
 import Cart from './Cart'; 
 
 const Drawer = createDrawerNavigator();
